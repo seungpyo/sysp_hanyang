@@ -230,7 +230,7 @@ int fitsBits(int x, int n) {
 
 int rotateLeft(int x, int n) {
 	//TODO
-        return (x<<n)|(x>>(33+~n));
+        return (x<<n)|( ((x&(~((1<<(33+~n))+~0)))>>(33+~n)) & ((1<<n)+~0)  );
 }
 
 /*
@@ -243,6 +243,7 @@ int rotateLeft(int x, int n) {
  */
 int isPower2(int x) {
 	//TODO
+        return (!!x) & (!(x>>31)) & (!(x&(x+~0)));
 }
 
 /* 
@@ -256,6 +257,7 @@ int isPower2(int x) {
 
 int rempwr2(int x, int n) {
 	//TODO
+        return (x&((1<<n)+~0)) | (~(((!!(x&(1<<31)))<<n)+~0));
 }
 
 /* 
@@ -268,7 +270,7 @@ int rempwr2(int x, int n) {
 
 int conditional(int x, int y, int z) {
 	//TODO
-        return ((~(!x))&y) | (!x);
+        return ((~(!!x)+1)&y) | ((~(~(!!x)+1))&z);
 }
 
 /*
@@ -306,6 +308,7 @@ int greatestBitPos(int x) {
 
 int logicalNeg(int x) {
 	//TODO
+        return ((~x+1)^x)&1;
 }
 
 /* 
