@@ -418,12 +418,11 @@ unsigned float_neg(unsigned uf) {
  */
 unsigned float_twice(unsigned uf) {
 	//TODO
-        unsigned e = uf&0x7f800000;
-        unsigned e_double = ((uf&0x7f800000)+1)&0x7f800000;
-        unsigned m = uf&(0x007fffff);
-        unsigned hole = uf&(~0x7f800000);
-        if((!(e^0x7f800000)) && m) return uf;
-        return hole|e_double;
+        // if(uf==0||uf==0x80000000) return uf;
+        if(!(uf&(~0x80000000))) return uf;
+        if(((uf>>23)&0xff) == 0xff) return uf; // NaN
+        if(((uf>>23)&0xff) == 0x00) return (uf&(1<<31))|(uf<<1); //Denorm
+        return uf+(1<<23); //Norm
 }
 
 
