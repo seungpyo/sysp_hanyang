@@ -216,7 +216,7 @@ int replaceByte(int x, int n, int c) {
  */
 int fitsBits(int x, int n) {
 	//TODO
-        return !!(x&(~((1<<n)+~0)));
+        return !(((x<<(33+~n))>>(33+~n))^x);
 }
 
 /* 
@@ -257,7 +257,10 @@ int isPower2(int x) {
 
 int rempwr2(int x, int n) {
 	//TODO
-        return  ( (x>>31) & ((~0)<<n) ) | ( x & ((1<<n)+~0) );
+
+        int divmask  = x & ((1<<n)+~0);
+        int headmask = (~((!!divmask)&(x>>31))+1)<<n;
+        return headmask | divmask;
 }
 
 /* 
@@ -302,11 +305,14 @@ int bitParity(int x) {
  */
 int greatestBitPos(int x) {
 	//TODO
-        x &= ~(x<<16);
-        x &= ~(x<<8);
-        x &= ~(x<<4);
-        x &= ~(x<<2);
-        x &= ~(x<<1);
+        x |= x>>1;
+        x |= x>>2;
+        x |= x>>4;
+        x |= x>>8;
+        x |= x>>16;
+        x ^= (x>>1);
+        x |= ((!x)<<31);
+        return x;
 }   
 
 /* 
@@ -392,10 +398,11 @@ int isMult4(int x) {
  */
 unsigned float_neg(unsigned uf) {
 	//TODO
-        int e = (uf>>23)&((1<<23)+~0);
-        int m = uf&((1<<23)+~0);
-        int isNaN = (!!(~e&((1<<23+~0))))&(!!m);
-        return uf ^ (isNaN<<31);
+        unsigned e = uf&0x7f800000;
+        unsigned m = uf&0x007fffff;
+        if((!(e^0x7f800000)) && m) return uf;
+
+        return ((~(uf>>31))<<31) | e | m;
 }
 
 /* 
@@ -411,6 +418,12 @@ unsigned float_neg(unsigned uf) {
  */
 unsigned float_twice(unsigned uf) {
 	//TODO
+        unsigned e = uf&0x7f800000;
+        unsigned e_double = ((uf&0x7f800000)+1)&0x7f800000;
+        unsigned m = uf&(0x007fffff);
+        unsigned hole = uf&(~0x7f800000);
+        if((!(e^0x7f800000)) && m) return uf;
+        return hole|e_double;
 }
 
 
