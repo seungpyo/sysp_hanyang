@@ -305,14 +305,14 @@ int bitParity(int x) {
  */
 int greatestBitPos(int x) {
 	//TODO
+        int sgn = x>>31;
         x |= x>>1;
         x |= x>>2;
         x |= x>>4;
         x |= x>>8;
         x |= x>>16;
         x ^= (x>>1);
-        x |= ((!x)<<31);
-        return x;
+        return (~(sgn)&x) | ((sgn)&(1<<31));
 }   
 
 /* 
