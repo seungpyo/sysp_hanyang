@@ -216,7 +216,7 @@ int replaceByte(int x, int n, int c) {
  */
 int fitsBits(int x, int n) {
 	//TODO
-        return !(x&((~((1<<n)>>1))+1));
+        return !!(x&(~((1<<n)+~0)));
 }
 
 /* 
@@ -257,7 +257,7 @@ int isPower2(int x) {
 
 int rempwr2(int x, int n) {
 	//TODO
-        return (x&((1<<n)+~0)) | (~(((!!(x&(1<<31)))<<n)+~0));
+        return  ( (x>>31) & ((~0)<<n) ) | ( x & ((1<<n)+~0) );
 }
 
 /* 
@@ -283,6 +283,13 @@ int conditional(int x, int y, int z) {
 
 int bitParity(int x) {
 	//TODO
+        // xor( i = 1~2k) x_i = (xor(i=1~k)x_i) xor (xor(i=k+1~2k)x_i)
+        x ^= x<<16;
+        x ^= x<<8;
+        x ^= x<<4;
+        x ^= x<<2;
+        x ^= x<<1;
+        return (x>>31)&1;
 }
 
 /* 
@@ -295,7 +302,12 @@ int bitParity(int x) {
  */
 int greatestBitPos(int x) {
 	//TODO
-}
+        x &= ~(x<<16);
+        x &= ~(x<<8);
+        x &= ~(x<<4);
+        x &= ~(x<<2);
+        x &= ~(x<<1);
+}   
 
 /* 
  * logicalNeg - implement the ! operator, using all of 
@@ -308,7 +320,15 @@ int greatestBitPos(int x) {
 
 int logicalNeg(int x) {
 	//TODO
-        return ((~x+1)^x)&1;
+        return ( (x>>31)|((~x+1)>>31) ) + 1;
+        /*
+        x |= x<<16;
+        x |= x<<8;
+        x |= x<<4;
+        x |= x<<2;
+        x |= x<<1;
+        return (~(x>>31))&1;
+        */
 }
 
 /* 
@@ -331,7 +351,7 @@ int bitAnd(int x, int y) {
  */
 int logical_OR(int x, int y) {
 	//TODO
-        return (!!(x|0))&(!!(y|0));
+        return (!!x)| (!!y);
 }
 
 /* concatenate - bitwise concatenate two input x, y
@@ -372,6 +392,10 @@ int isMult4(int x) {
  */
 unsigned float_neg(unsigned uf) {
 	//TODO
+        int e = (uf>>23)&((1<<23)+~0);
+        int m = uf&((1<<23)+~0);
+        int isNaN = (!!(~e&((1<<23+~0))))&(!!m);
+        return uf ^ (isNaN<<31);
 }
 
 /* 
