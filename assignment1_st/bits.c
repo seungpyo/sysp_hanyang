@@ -418,10 +418,11 @@ unsigned float_neg(unsigned uf) {
  */
 unsigned float_twice(unsigned uf) {
 	//TODO
-        // if(uf==0||uf==0x80000000) return uf;
+        unsigned s = uf&(1<<31);
+        unsigned e = (uf>>23)&0xFF;
         if(!(uf&(~0x80000000))) return uf;
-        if(((uf>>23)&0xff) == 0xff) return uf; // NaN
-        if(((uf>>23)&0xff) == 0x00) return (uf&(1<<31))|(uf<<1); //Denorm
+        if(e==0xFF) return uf; // NaN
+        if(!e) return s|(uf<<1); //Denorm
         return uf+(1<<23); //Norm
 }
 
