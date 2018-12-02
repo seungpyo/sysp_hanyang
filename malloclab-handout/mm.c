@@ -210,8 +210,6 @@ int mm_init(void)
 #endif
     heap_start = extend_heap(INITCHUNKSIZE);
 
-    print_block(heap_start);
-    printf("heap spans from %p to %p\n", mem_heap_lo(), mem_heap_hi());
     if (heap_start == NULL)
         return -1;
     return 0;

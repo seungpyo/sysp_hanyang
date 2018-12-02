@@ -1,0 +1,87 @@
+./sdriver.pl -t trace01.txt -s ./tsh -a "-p"
+#
+# trace01.txt - Properly terminate on EOF.
+#
+./sdriver.pl -t trace02.txt -s ./tsh -a "-p"
+#
+# trace02.txt - Process builtin quit command.
+#
+./sdriver.pl -t trace03.txt -s ./tsh -a "-p"
+#
+# trace03.txt - Run a foreground job.
+#
+tsh> quit
+./sdriver.pl -t trace04.txt -s ./tsh -a "-p"
+#
+# trace04.txt - Run a background job.
+#
+tsh> ./myspin 1 &
+[1] (26252) ./myspin 1 &
+./sdriver.pl -t trace05.txt -s ./tsh -a "-p"
+#
+# trace05.txt - Process jobs builtin command.
+#
+tsh> ./myspin 2 &
+[1] (26256) ./myspin 2 &
+tsh> ./myspin 3 &
+[2] (26258) ./myspin 3 &
+tsh> jobs
+[1] (26256) Running ./myspin 2 &
+[2] (26258) Running ./myspin 3 &
+./sdriver.pl -t trace06.txt -s ./tsh -a "-p"
+#
+# trace06.txt - Forward SIGINT to foreground job.
+#
+tsh> ./myspin 4
+Job [1] (26263) terminated by signal 2
+./sdriver.pl -t trace07.txt -s ./tsh -a "-p"
+#
+# trace07.txt - Forward SIGINT only to foreground job.
+#
+tsh> ./myspin 4 &
+[1] (26267) ./myspin 4 &
+tsh> ./myspin 5
+Job [2] (26269) terminated by signal 2
+tsh> jobs
+[1] (26267) Running ./myspin 4 &
+./sdriver.pl -t trace08.txt -s ./tsh -a "-p"
+#
+# trace08.txt - Forward SIGTSTP only to foreground job.
+#
+tsh> ./myspin 4 &
+[1] (26274) ./myspin 4 &
+tsh> ./myspin 5
+Job [2] (26276) stopped by signal 20
+tsh> jobs
+[1] (26274) Running ./myspin 4 &
+[2] (26276) Stopped ./myspin 5 
+./sdriver.pl -t trace09.txt -s ./tsh -a "-p"
+#
+# trace09.txt - Process bg builtin command
+#
+tsh> ./myspin 4 &
+[1] (26281) ./myspin 4 &
+tsh> ./myspin 5
+Job [2] (26283) stopped by signal 20
+tsh> jobs
+[1] (26281) Running ./myspin 4 &
+[2] (26283) Stopped ./myspin 5 
+tsh> bg %2
+[2] (26283) ./myspin 5 
+tsh> jobs
+[1] (26281) Running ./myspin 4 &
+[2] (26283) Running ./myspin 5 
+./sdriver.pl -t trace10.txt -s ./tsh -a "-p"
+#
+# trace10.txt - Process fg builtin command. 
+#
+tsh> ./myspin 4 &
+[1] (26290) ./myspin 4 &
+tsh> fg %1
+Job [1] (26290) stopped by signal 20
+tsh> jobs
+[1] (26290) Stopped ./myspin 4 &
+tsh> fg %1
+tsh> jobs
+./sdriver.pl -t trace11.txt -s ./tsh -a "-p"
+
